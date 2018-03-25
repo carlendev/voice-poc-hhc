@@ -11,13 +11,13 @@ export class AppComponent implements OnInit {
   locale = 'FR-fr';
   name = 'Jaqueline';
   soundsSynth = [
-    { key: 'eat', url: 'Bonjour Jacqueline il est midi il serait bien de manger', description: 'Manger Midi' },
-    { key: 'morning', url: this.getDateSentence(), description: 'Matin' }
+    { key: 'eat', url: 'Bonjour Jacqueline il est midi il serait bien de manger', description: 'Manger Midi', urls: [] },
+    { key: 'morning', url: this.getDateSentence(), description: 'Matin', urls: [] }
   ];
   sounds = [
-    { key: 'eat', url: '/assets/audio_sentences/midday_sentence.wav', description: 'Manger Midi', one: false },
-    { key: 'cooking', url: '/assets/audio_sentences/urgent_cookingdevice.wav', description: 'Plaques de cuison', one: false },
-    { key: 'urgence', url: '/assets/audio_sentences/urgent_incominghelp.wav', description: 'Les urgences', one: false },
+    { key: 'eat', url: '/assets/audio_sentences/midday_sentence.wav', description: 'Manger Midi', one: false, urls: [] },
+    { key: 'cooking', url: '/assets/audio_sentences/urgent_cookingdevice.wav', description: 'Plaques de cuison', one: false, urls: [] },
+    { key: 'urgence', url: '/assets/audio_sentences/urgent_incominghelp.wav', description: 'Les urgences', one: false, urls: [] },
     { key: 'wakeup',  description: 'Le reveil', one: true, urls: [
       { type: 0, url: '/assets/audio_sentences/wakeup_sentence_p1.wav' },
       { type: 0, url: '/assets/audio_sentences/wakeup_sentence_p2.wav' },
@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
   playSynthese(event) {
     const msg = new SpeechSynthesisUtterance(event.url);
     msg.lang = 'fr-FR';
-    msg.rate = 0.7;
+    msg.rate = 1;
     (<any>window).speechSynthesis.speak(msg);
   }
 
@@ -68,7 +68,7 @@ export class AppComponent implements OnInit {
   playAsyncSynth(url) {
     return new Promise((resolve, reject) => {
       const msg = new SpeechSynthesisUtterance(url);
-      msg.lang = 'fr-BE';
+      msg.lang = 'fr-FR';
       msg.pitch = 1.5;
       msg.onerror = reject;
       msg.onend = resolve;
@@ -94,5 +94,12 @@ export class AppComponent implements OnInit {
       audio.load();
       await audio.play();
     }
+    if (elem.key === 'cooking') fetch('http://alzahelp-notification-api.cleverapps.io/send', {
+      method: 'POST'
+    })
+      .then(response => console.log(response.json()))
+      .catch(error => {
+        console.error(error);
+      });
   }
 }
